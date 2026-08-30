@@ -1,5 +1,6 @@
 /* Outlook specific API library */
-/* Version: 15.0.4856.3003 */
+/* Version: 15.0.4927.1000 */
+/* Update: 2 */
 /*
 	Copyright (c) Microsoft Corporation.  All rights reserved.
 */
@@ -3930,7 +3931,13 @@ OSF.DDA.RichClientSettingsManager={
 		if (onCalling) {
 			onCalling();
 		}
-		window.external.GetContext().GetSettings().Read(keys, values);
+		if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+			window.external.GetContext().GetSettings(OsfOMToken).Read(keys, values);
+		}
+		else
+		{
+			window.external.GetContext().GetSettings().Read(keys, values);
+		}
 		if (onReceiving) {
 			onReceiving();
 		}
@@ -3950,7 +3957,12 @@ OSF.DDA.RichClientSettingsManager={
 		if (onCalling) {
 			onCalling();
 		}
-		window.external.GetContext().GetSettings().Write(keys, values);
+		if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+			window.external.GetContext().GetSettings(OsfOMToken).Write(keys, values);
+		}
+		else {
+			window.external.GetContext().GetSettings().Write(keys, values);
+		}
 		if (onReceiving) {
 			onReceiving();
 		}
@@ -4174,15 +4186,30 @@ var OSFRichclient;
 			function RichClientHostController(){}
 			RichClientHostController.prototype.execute=function(id, params, callback)
 			{
-				window.external.Execute(id,params,callback)
+				if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+					window.external.Execute(id,params,callback,OsfOMToken);
+				}
+				else{
+					window.external.Execute(id,params,callback);
+				}
 			};
 			RichClientHostController.prototype.registerEvent=function(id, targetId, handler, callback)
 			{
-				window.external.RegisterEvent(id,targetId,handler,callback)
+				if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+					window.external.RegisterEvent(id,targetId,handler,callback,OsfOMToken);
+				}
+				else {
+					window.external.RegisterEvent(id,targetId,handler,callback);
+				}
 			};
 			RichClientHostController.prototype.unregisterEvent=function(id, targetId, callback)
 			{
-				window.external.UnregisterEvent(id,targetId,callback)
+				if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+					window.external.UnregisterEvent(id,targetId,callback,OsfOMToken);
+				}
+				else {
+					window.external.UnregisterEvent(id,targetId,callback);
+				}
 			};
 			return RichClientHostController
 		}();
@@ -4449,13 +4476,17 @@ var OfficeExt;
 var OfficeJsClient_OutlookWin32;
 (function(OfficeJsClient_OutlookWin32)
 {
+	function prepareRightAfterWebExtensionInitialize()
+	{
+		var appCommandHandler=OfficeExt.AppCommand.AppCommandManager.instance();
+		appCommandHandler.initializeAndChangeOnce();
+	}
 	function prepareRightBeforeWebExtensionInitialize()
 	{
 		OSF._OfficeAppFactory.setHostFacade(new OSF.DDA.DispIdHost.Facade(OSF.DDA.DispIdHost.getClientDelegateMethods,OSF.DDA.SafeArray.Delegate.ParameterMap));
-		var appCommandHandler=OfficeExt.AppCommand.AppCommandManager.instance();
-		appCommandHandler.initializeAndChangeOnce()
 	}
-	OfficeJsClient_OutlookWin32.prepareRightBeforeWebExtensionInitialize=prepareRightBeforeWebExtensionInitialize
+	OfficeJsClient_OutlookWin32.prepareRightBeforeWebExtensionInitialize=prepareRightBeforeWebExtensionInitialize;
+	OfficeJsClient_OutlookWin32.prepareRightAfterWebExtensionInitialize=prepareRightAfterWebExtensionInitialize;
 })(OfficeJsClient_OutlookWin32 || (OfficeJsClient_OutlookWin32={}));
 OSF.OUtil.setNamespace("SafeArray", OSF.DDA);
 OSF.DDA.SafeArray.Response={
@@ -5400,37 +5431,73 @@ OSF.DDA.SafeArray.Delegate.executeAsync=function OSF_DDA_SafeArray_Delegate$Exec
 			return arrArgs;
 		}
 		var startTime=(new Date()).getTime();
-		window.external.Execute(
-			args.dispId,
-			toArray(args.hostCallArgs),
-			function OSF_DDA_SafeArrayFacade$Execute_OnResponse(hostResponseArgs) {
-				if (args.onReceiving) {
-					args.onReceiving();
-				}
-				var result=hostResponseArgs.toArray();
-				var status=result[OSF.DDA.SafeArray.Response.Status];
-				if (args.onComplete) {
-					var payload;
-					if (status==OSF.DDA.ErrorCodeManager.errorCodes.ooeSuccess) {
-						if (result.length > 2) {
-							payload=[];
-							for (var i=1; i < result.length; i++)
-								payload[i - 1]=result[i];
+		if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+			window.external.Execute(
+				args.dispId,
+				toArray(args.hostCallArgs),
+				function OSF_DDA_SafeArrayFacade$Execute_OnResponse(hostResponseArgs) {
+					if (args.onReceiving) {
+						args.onReceiving();
+					}
+					var result=hostResponseArgs.toArray();
+					var status=result[OSF.DDA.SafeArray.Response.Status];
+					if (args.onComplete) {
+						var payload;
+						if (status==OSF.DDA.ErrorCodeManager.errorCodes.ooeSuccess) {
+							if (result.length > 2) {
+								payload=[];
+								for (var i=1; i < result.length; i++)
+									payload[i - 1]=result[i];
+							}
+							else {
+								payload=result[OSF.DDA.SafeArray.Response.Payload];
+							}
 						}
 						else {
 							payload=result[OSF.DDA.SafeArray.Response.Payload];
 						}
+						args.onComplete(status, payload);
 					}
-					else {
-						payload=result[OSF.DDA.SafeArray.Response.Payload];
+					if (OSF.AppTelemetry) {
+						OSF.AppTelemetry.onMethodDone(args.dispId, args.hostCallArgs, Math.abs((new Date()).getTime() -  startTime), status);
 					}
-					args.onComplete(status, payload);
+				},
+				OsfOMToken
+			);
+		}
+		else {
+			window.external.Execute(
+				args.dispId,
+				toArray(args.hostCallArgs),
+				function OSF_DDA_SafeArrayFacade$Execute_OnResponse1(hostResponseArgs) {
+					if (args.onReceiving) {
+						args.onReceiving();
+					}
+					var result=hostResponseArgs.toArray();
+					var status=result[OSF.DDA.SafeArray.Response.Status];
+					if (args.onComplete) {
+						var payload;
+						if (status==OSF.DDA.ErrorCodeManager.errorCodes.ooeSuccess) {
+							if (result.length > 2) {
+								payload=[];
+								for (var i=1; i < result.length; i++)
+									payload[i - 1]=result[i];
+							}
+							else {
+								payload=result[OSF.DDA.SafeArray.Response.Payload];
+							}
+						}
+						else {
+							payload=result[OSF.DDA.SafeArray.Response.Payload];
+						}
+						args.onComplete(status, payload);
+					}
+					if (OSF.AppTelemetry) {
+						OSF.AppTelemetry.onMethodDone(args.dispId, args.hostCallArgs, Math.abs((new Date()).getTime() -  startTime), status);
+					}
 				}
-				if (OSF.AppTelemetry) {
-					OSF.AppTelemetry.onMethodDone(args.dispId, args.hostCallArgs, Math.abs((new Date()).getTime() -  startTime), status);
-				}
-			}
-		);
+			);
+		}
 	}
 	catch (ex) {
 		OSF.DDA.SafeArray.Delegate._onException(ex, args);
@@ -5457,19 +5524,37 @@ OSF.DDA.SafeArray.Delegate.registerEventAsync=function OSF_DDA_SafeArray_Delegat
 	}
 	var callback=OSF.DDA.SafeArray.Delegate._getOnAfterRegisterEvent(true, args);
 	try {
-		window.external.RegisterEvent(
-			args.dispId,
-			args.targetId,
-			function OSF_DDA_SafeArrayDelegate$RegisterEventAsync_OnEvent(eventDispId, payload) {
-				if (args.onEvent) {
-					args.onEvent(payload);
-				}
-				if (OSF.AppTelemetry) {
-					OSF.AppTelemetry.onEventDone(args.dispId);
-				}
-			},
-			callback
-		);
+		if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+			window.external.RegisterEvent(
+				args.dispId,
+				args.targetId,
+				function OSF_DDA_SafeArrayDelegate$RegisterEventAsync_OnEvent(eventDispId, payload) {
+					if (args.onEvent) {
+						args.onEvent(payload);
+					}
+					if (OSF.AppTelemetry) {
+						OSF.AppTelemetry.onEventDone(args.dispId);
+					}
+				},
+				callback,
+				OsfOMToken
+			);
+		}
+		else {
+			window.external.RegisterEvent(
+				args.dispId,
+				args.targetId,
+				function OSF_DDA_SafeArrayDelegate$RegisterEventAsync_OnEvent1(eventDispId, payload) {
+					if (args.onEvent) {
+						args.onEvent(payload);
+					}
+					if (OSF.AppTelemetry) {
+						OSF.AppTelemetry.onEventDone(args.dispId);
+					}
+				},
+				callback
+			);
+		}
 	}
 	catch (ex) {
 		OSF.DDA.SafeArray.Delegate._onException(ex, args);
@@ -5481,11 +5566,21 @@ OSF.DDA.SafeArray.Delegate.unregisterEventAsync=function OSF_DDA_SafeArray_Deleg
 	}
 	var callback=OSF.DDA.SafeArray.Delegate._getOnAfterRegisterEvent(false, args);
 	try {
-		window.external.UnregisterEvent(
-			args.dispId,
-			args.targetId,
-			callback
-		);
+		  if (typeof OsfOMToken !='undefined' && OsfOMToken) {
+				window.external.UnregisterEvent(
+					args.dispId,
+					args.targetId,
+					callback,
+					OsfOMToken
+				);
+		}
+		else{
+				window.external.UnregisterEvent(
+					args.dispId,
+					args.targetId,
+					callback
+				);
+		}
 	}
 	catch (ex) {
 		OSF.DDA.SafeArray.Delegate._onException(ex, args);
@@ -5498,7 +5593,13 @@ OSF.DDA.SafeArray.Delegate.MessageParent=function OSF_DDA_SafeArray_Delegate$Mes
 		}
 		var startTime=(new Date()).getTime();
 		var message=args.hostCallArgs[Microsoft.Office.WebExtension.Parameters.MessageToParent];
-		window.external.MessageParent(message);
+		if (typeof window.external.MessageParent2 !='undefined' && typeof OsfOMToken !='undefined' && OsfOMToken) {
+			var targetOrigin=args.hostCallArgs[Microsoft.Office.WebExtension.Parameters.TargetOrigin];
+			window.external.MessageParent2(message, targetOrigin, OsfOMToken);
+		}
+		else {
+			window.external.MessageParent(message);
+		}
 		if (args.onReceiving) {
 			args.onReceiving();
 		}

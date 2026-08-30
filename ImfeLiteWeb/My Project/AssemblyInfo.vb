@@ -11,13 +11,13 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("ImfeLiteWeb")>
-<Assembly: AssemblyCopyright("Copyright ©  2019")>
+<Assembly: AssemblyCopyright("Copyright ©  2024")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("d4d15206-bce0-4ab7-9a1e-511259afd397")>
+<Assembly: Guid("4c3bd34a-c7b0-4d34-af2a-55045c42492a")>
 
 ' Version information for an assembly consists of the following four values:
 '

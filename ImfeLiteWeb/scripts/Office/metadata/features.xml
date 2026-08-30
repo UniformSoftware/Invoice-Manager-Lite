@@ -130,6 +130,9 @@
   <Set Name="OoxmlCoercion">
     <Version Value="1.1" />
   </Set>
+  <Set Name="Pivot">
+    <Version Value="1.4" />
+  </Set>
   <Set Name="Selection">
     <Version Value="1.1">
       <Method Name="Document.getSelectedDataAsync" />
@@ -158,5 +161,8 @@
   <Set Name="WordApi">
     <Version Value="1.1" />
     <Version Value="1.2" />
+  </Set>
+  <Set Name="PowerPointApi">
+    <Version Value="1.1" />
   </Set>
 </Features>

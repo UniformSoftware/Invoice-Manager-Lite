@@ -1,13 +1,13 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="17.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{046841C8-ABF4-4C87-AF50-8B041A277E59}</ProjectGuid>
+    <ProjectGuid>{78C25232-7360-456F-96FD-59B060E1341B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>ImfeLite</RootNamespace>
-    <AssemblyName>mn</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <AssemblyName>ImfeLite</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetOfficeVersion>15.0</TargetOfficeVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{C1CDDADD-2546-481F-9697-4EA41081F2FC};{D59BE175-2ED0-4C54-BE3D-CDAA9F3214C8};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
@@ -17,16 +17,15 @@
     <OptionInfer>On</OptionInfer>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
     <IncludeAssemblyInPackage>False</IncludeAssemblyInPackage>
-    <AppFeaturePartId>{0f743611-c43e-43fb-8a11-f897240aa4aa}</AppFeaturePartId>
-    <WspPartId>{c8219054-e2d6-4af0-af7c-8cf925f9cf83}</WspPartId>
-    <WorkflowPartId>{8d9516c8-25d3-4a0d-91e9-71e3dc868200}</WorkflowPartId>
-    <CspkgPartId>{96513a9a-2dba-47b4-9cb2-7dd5160fb7b4}</CspkgPartId>
-    <SqlPackagePartId>{7b683e61-346b-47fd-b45e-fae009ebe2ad}</SqlPackagePartId>
+    <AppFeaturePartId>{25c35649-d19f-4d83-b1f0-016fe23e50ca}</AppFeaturePartId>
+    <WspPartId>{52587685-85d2-4141-bb0f-83aa3490460d}</WspPartId>
+    <WorkflowPartId>{e4061fb8-9cc4-48c7-9b79-a80031bce1a2}</WorkflowPartId>
+    <CspkgPartId>{99a9ba9f-a983-4edf-a0e1-cf915108e9d0}</CspkgPartId>
+    <SqlPackagePartId>{c491b4de-b03b-4d2b-ab40-ecea00f57329}</SqlPackagePartId>
     <ProjectMode>OfficeApp</ProjectMode>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <MinimumOfficeToolsVersion>14.0</MinimumOfficeToolsVersion>
-    <ActivePublishProfile>invoicingtemplate.com</ActivePublishProfile>
-    <TargetFrameworkProfile />
+    <ActivePublishProfile>FolderProfile</ActivePublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,8 +33,9 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>mn.xml</DocumentationFile>
+    <DocumentationFile>ImfeLite.xml</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,25 +43,27 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>mn.xml</DocumentationFile>
+    <DocumentationFile>ImfeLite.xml</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
   </PropertyGroup>
   <ItemGroup>
     <None Include="ImfeLiteManifest\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{74d81337-558e-4e0c-9be7-d99656116e8b}</SharePointProjectItemId>
+      <SharePointProjectItemId>{aad072c7-9de5-4b30-bc18-0e8c02a9f163}</SharePointProjectItemId>
     </None>
     <Content Include="ImfeLiteManifest\ImfeLite.xml">
       <OpcRelationship>manifest-oemanifest</OpcRelationship>
-      <SubType>Designer</SubType>
     </Content>
-    <None Include="job.xlsx" />
+    <Content Include="invoice-template.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImfeLiteWeb\ImfeLiteWeb.vbproj">
-      <Project>{D4D15206-BCE0-4AB7-9A1E-511259AFD397}</Project>
+      <Project>{4C3BD34A-C7B0-4D34-AF2A-55045C42492A}</Project>
       <Name>ImfeLiteWeb</Name>
       <Private>True</Private>
       <RoleType>Web</RoleType>
